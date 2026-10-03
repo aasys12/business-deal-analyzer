@@ -23,7 +23,7 @@
       <div>
         <div class="eyebrow">Acquisition underwriting in one screen</div>
         <h2>Should you buy the business, negotiate, buy property instead, or walk away?</h2>
-        <p>Enter a listing URL for reference, then add the financials. This MVP calculates valuation, debt service, DSCR, cash-on-cash return, stress scenarios, and a transparent recommendation.</p>
+        <p>Paste a supported business-listing URL and import the public listing data, or paste the listing text as a fallback. Then review the assumptions and run valuation, financing, stress testing, and a transparent recommendation.</p>
       </div>
     </section>
 
@@ -32,8 +32,18 @@
         <div class="section-title">1. Deal details</div>
 
         <label>Listing URL
-          <input id="listingUrl" type="url" placeholder="https://www.bizbuysell.com/..." />
+          <div class="import-row">
+            <input id="listingUrl" type="url" placeholder="https://www.bizbuysell.com/..." />
+            <button id="importUrlBtn" type="button" class="secondary">Import URL</button>
+          </div>
         </label>
+        <div id="importStatus" class="import-status">On Cloudflare Pages, “Import URL” will fetch supported public listings automatically.</div>
+        <details class="paste-box">
+          <summary>Fallback: paste listing text</summary>
+          <p class="muted small">If a marketplace blocks automatic fetching, copy the visible listing page and paste it here.</p>
+          <textarea id="listingText" rows="7" placeholder="Paste listing text containing Asking Price, Cash Flow (SDE), Gross Revenue, Inventory, etc."></textarea>
+          <button id="parseTextBtn" type="button" class="secondary">Extract From Text</button>
+        </details>
 
         <div class="grid two compact">
           <label>Business name
