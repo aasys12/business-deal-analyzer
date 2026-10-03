@@ -86,3 +86,15 @@ The next useful version should add:
 ## Disclaimer
 
 Educational underwriting tool only. It is not legal, tax, accounting, brokerage, appraisal, or lending advice.
+
+
+## Cloudflare Workers deployment
+
+This repo is also configured for Cloudflare Workers with Static Assets.
+The dashboard deploy command can remain:
+
+```bash
+npx wrangler deploy
+```
+
+Wrangler reads `wrangler.jsonc`, publishes the static site from `public/`, and routes `/api/import` through `src/index.js`.
