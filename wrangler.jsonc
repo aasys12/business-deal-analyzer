@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "business-deal-analyzer",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-03",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  }
+}
