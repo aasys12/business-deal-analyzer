@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Business Deal Analyzer</title>
+  <meta name="description" content="Analyze small-business acquisitions, financing, valuation, stress tests, and business-vs-property opportunities." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <div>
+        <div class="eyebrow">MVP</div>
+        <h1>Business Deal Analyzer</h1>
+      </div>
+      <button id="loadExampleBtn" class="secondary">Load Example</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <div>
+        <div class="eyebrow">Acquisition underwriting in one screen</div>
+        <h2>Should you buy the business, negotiate, buy property instead, or walk away?</h2>
+        <p>Enter a listing URL for reference, then add the financials. This MVP calculates valuation, debt service, DSCR, cash-on-cash return, stress scenarios, and a transparent recommendation.</p>
+      </div>
+    </section>
+
+    <section class="grid two">
+      <form id="dealForm" class="card">
+        <div class="section-title">1. Deal details</div>
+
+        <label>Listing URL
+          <input id="listingUrl" type="url" placeholder="https://www.bizbuysell.com/..." />
+        </label>
+
+        <div class="grid two compact">
+          <label>Business name
+            <input id="businessName" type="text" placeholder="Example Laundry" />
+          </label>
+          <label>Location
+            <input id="location" type="text" placeholder="Dallas, TX" />
+          </label>
+        </div>
+
+        <div class="grid three compact">
+          <label>Asking price
+            <input id="askingPrice" type="number" min="0" step="1000" value="650000" />
+          </label>
+          <label>Annual revenue
+            <input id="revenue" type="number" min="0" step="1000" value="1200000" />
+          </label>
+          <label>Reported SDE
+            <input id="sde" type="number" min="0" step="1000" value="210000" />
+          </label>
+        </div>
+
+        <div class="grid three compact">
+          <label>EBITDA
+            <input id="ebitda" type="number" min="0" step="1000" value="150000" />
+          </label>
+          <label>Annual rent
+            <input id="rent" type="number" min="0" step="1000" value="72000" />
+          </label>
+          <label>Inventory included
+            <input id="inventory" type="number" min="0" step="1000" value="60000" />
+          </label>
+        </div>
+
+        <div class="section-title">2. Normalize owner cash flow</div>
+        <div class="grid three compact">
+          <label>Replacement manager
+            <input id="managerSalary" type="number" min="0" step="1000" value="65000" />
+          </label>
+          <label>Maintenance CAPEX
+            <input id="capex" type="number" min="0" step="1000" value="12000" />
+          </label>
+          <label>Other annual adjustments
+            <input id="otherAdj" type="number" step="1000" value="8000" />
+          </label>
+        </div>
+
+        <div class="section-title">3. Financing</div>
+        <div class="grid three compact">
+          <label>Down payment %
+            <input id="downPct" type="number" min="0" max="100" step="1" value="20" />
+          </label>
+          <label>Interest rate %
+            <input id="interestRate" type="number" min="0" step="0.01" value="10.5" />
+          </label>
+          <label>Loan term (years)
+            <input id="termYears" type="number" min="1" step="1" value="10" />
+          </label>
+        </div>
+
+        <div class="section-title">4. Comparable business assumptions</div>
+        <div class="grid three compact">
+          <label>Median SDE multiple
+            <input id="marketSdeMultiple" type="number" min="0" step="0.05" value="2.65" />
+          </label>
+          <label>Median revenue multiple
+            <input id="marketRevenueMultiple" type="number" min="0" step="0.01" value="0.48" />
+          </label>
+          <label>Confidence %
+            <input id="compConfidence" type="number" min="0" max="100" step="1" value="70" />
+          </label>
+        </div>
+
+        <div class="section-title">5. Property alternative</div>
+        <div class="grid three compact">
+          <label>Property cash required
+            <input id="propertyCash" type="number" min="0" step="1000" value="150000" />
+          </label>
+          <label>Property annual cash flow
+            <input id="propertyCashFlow" type="number" step="100" value="11400" />
+          </label>
+          <label>Property appreciation %
+            <input id="propertyAppreciation" type="number" step="0.1" value="3" />
+          </label>
+        </div>
+
+        <div class="section-title">6. Risk flags</div>
+        <div class="checks">
+          <label><input id="ownerDependency" type="checkbox" checked /> Owner-dependent operation</label>
+          <label><input id="shortLease" type="checkbox" checked /> Lease has less than 5 years remaining</label>
+          <label><input id="customerConcentration" type="checkbox" /> Customer concentration risk</label>
+          <label><input id="booksWeak" type="checkbox" /> Financial records appear weak/unverified</label>
+        </div>
+
+        <button type="submit" class="primary">Analyze Deal</button>
+      </form>
+
+      <aside class="card sticky">
+        <div class="section-title">Recommendation</div>
+        <div id="recommendationBadge" class="badge neutral">ENTER DATA</div>
+        <h3 id="recommendationTitle">Run the analysis</h3>
+        <p id="recommendationSummary">The engine will show valuation, financing, downside resilience, and whether the business beats the property alternative.</p>
+
+        <div class="metric-grid">
+          <div class="metric"><span>Deal score</span><strong id="dealScore">—</strong></div>
+          <div class="metric"><span>Fair value midpoint</span><strong id="fairValue">—</strong></div>
+          <div class="metric"><span>Max recommended price</span><strong id="maxPrice">—</strong></div>
+          <div class="metric"><span>Suggested opening offer</span><strong id="openingOffer">—</strong></div>
+        </div>
+
+        <div class="section-title">Key metrics</div>
+        <table>
+          <tbody>
+            <tr><td>Price / SDE</td><td id="priceSde">—</td></tr>
+            <tr><td>SDE margin</td><td id="sdeMargin">—</td></tr>
+            <tr><td>Adjusted cash flow</td><td id="adjustedCash">—</td></tr>
+            <tr><td>Annual debt service</td><td id="debtService">—</td></tr>
+            <tr><td>DSCR</td><td id="dscr">—</td></tr>
+            <tr><td>Cash-on-cash</td><td id="coc">—</td></tr>
+            <tr><td>Payback period</td><td id="payback">—</td></tr>
+          </tbody>
+        </table>
+      </aside>
+    </section>
+
+    <section class="grid two">
+      <div class="card">
+        <div class="section-title">Valuation</div>
+        <div id="valuationNarrative" class="prose muted">Run the analysis to estimate fair value using comparable SDE and revenue multiples.</div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Business vs. property</div>
+        <div id="comparisonNarrative" class="prose muted">The same available cash will be compared against a property investment.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">Stress test</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Scenario</th><th>Revenue change</th><th>Estimated SDE</th><th>DSCR</th><th>Cash after debt</th><th>Result</th></tr>
+          </thead>
+          <tbody id="stressTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">Why the engine reached this conclusion</div>
+      <div class="grid two">
+        <div>
+          <h3>Positives</h3>
+          <ul id="positives"></ul>
+        </div>
+        <div>
+          <h3>Concerns</h3>
+          <ul id="concerns"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card disclaimer">
+      <strong>Important:</strong> This MVP is an educational underwriting tool, not accounting, legal, tax, appraisal, brokerage, or lending advice. Verify seller financials, tax returns, leases, licenses, equipment, liens, debt, and market comparables before making an offer.
+    </section>
+  </main>
+
+  <footer class="container footer">Business Deal Analyzer MVP</footer>
+  <script src="app.js"></script>
+</body>
+</html>
